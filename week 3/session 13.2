@@ -1,0 +1,50 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Read the number of lines
+        int n = scanner.nextInt();
+        
+        // List of lists to store the dynamic rows
+        ArrayList<ArrayList<Integer>> lines = new ArrayList<>();
+        
+        for (int i = 0; i < n; i++) {
+            int d = scanner.nextInt(); // Number of elements in this line
+            ArrayList<Integer> currentLine = new ArrayList<>();
+            for (int j = 0; j < d; j++) {
+                currentLine.add(scanner.nextInt());
+            }
+            lines.add(currentLine);
+        }
+        
+        // Read the number of queries
+        int q = scanner.nextInt();
+        
+        for (int i = 0; i < q; i++) {
+            int x = scanner.nextInt(); // Line number (1-indexed)
+            int y = scanner.nextInt(); // Position in line (1-indexed)
+            
+            // Convert 1-based indexing from input to 0-based indexing for ArrayLists
+            int lineIndex = x - 1;
+            int elementIndex = y - 1;
+            
+            // Check if lineIndex exists and elementIndex is within that line's bounds
+            if (lineIndex >= 0 && lineIndex < lines.size()) {
+                ArrayList<Integer> line = lines.get(lineIndex);
+                if (elementIndex >= 0 && elementIndex < line.size()) {
+                    System.out.println(line.get(elementIndex));
+                } else {
+                    System.out.println("ERROR!");
+                }
+            } else {
+                System.out.println("ERROR!");
+            }
+        }
+        
+        scanner.close();
+    }
+}
