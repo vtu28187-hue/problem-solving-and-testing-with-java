@@ -1,0 +1,339 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+// Driver class
+class Driver {
+    int id;
+    String name;
+    String vehicle;
+    boolean available;
+
+    Driver(int id, String name, String vehicle) {
+        this.id = id;
+        this.name = name;
+        this.vehicle = vehicle;
+        this.available = true;
+    }
+
+    void displayDriver() {
+        System.out.println("Driver ID: " + id);
+        System.out.println("Name: " + name);
+        System.out.println("Vehicle: " + vehicle);
+        System.out.println("Available: " + (available ? "Yes" : "No"));
+        System.out.println("----------------------");
+    }
+}
+
+// Passenger class
+class Passenger {
+    int id;
+    String name;
+
+    Passenger(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+}
+
+// Ride class
+class Ride {
+    int rideId;
+    Passenger passenger;
+    Driver driver;
+    String pickup;
+    String destination;
+    double distance;
+    double fare;
+    String status;
+
+    Ride(int rideId, Passenger passenger, String pickup,
+         String destination, double distance) {
+
+        this.rideId = rideId;
+        this.passenger = passenger;
+        this.pickup = pickup;
+        this.destination = destination;
+        this.distance = distance;
+        this.fare = 50 + (distance * 15); // Base fare + per km
+        this.status = "Booked";
+    }
+
+    void displayRide() {
+        System.out.println("\nRide ID: " + rideId);
+        System.out.println("Passenger: " + passenger.name);
+        System.out.println("Pickup: " + pickup);
+        System.out.println("Destination: " + destination);
+        System.out.println("Distance: " + distance + " km");
+        System.out.println("Fare: Rs." + fare);
+
+        if (driver != null)
+            System.out.println("Driver: " + driver.name);
+        else
+            System.out.println("Driver: Not Assigned");
+
+        System.out.println("Status: " + status);
+        System.out.println("----------------------");
+    }
+}
+
+// Main platform class
+class RideSharingPlatform {
+
+    ArrayList<Driver> drivers = new ArrayList<>();
+    ArrayList<Passenger> passengers = new ArrayList<>();
+    ArrayList<Ride> rides = new ArrayList<>();
+
+    int rideCounter = 1;
+
+    // Add driver
+    void addDriver(Driver driver) {
+        drivers.add(driver);
+        System.out.println("Driver added successfully.");
+    }
+
+    // Add passenger
+    void addPassenger(Passenger passenger) {
+        passengers.add(passenger);
+        System.out.println("Passenger added successfully.");
+    }
+
+    // Find available driver
+    Driver findDriver() {
+        for (Driver driver : drivers) {
+            if (driver.available) {
+                return driver;
+            }
+        }
+        return null;
+    }
+
+    // Book ride
+    void bookRide(Passenger passenger, String pickup,
+                  String destination, double distance) {
+
+        Driver driver = findDriver();
+
+        if (driver == null) {
+            System.out.println("Sorry! No drivers are currently available.");
+            return;
+        }
+
+        Ride ride = new Ride(
+                rideCounter++,
+                passenger,
+                pickup,
+                destination,
+                distance
+        );
+
+        ride.driver = driver;
+        driver.available = false;
+
+        rides.add(ride);
+
+        System.out.println("\nRide booked successfully!");
+        System.out.println("Ride ID: " + ride.rideId);
+        System.out.println("Driver: " + driver.name);
+        System.out.println("Fare: Rs." + ride.fare);
+    }
+
+    // Complete ride
+    void completeRide(int rideId) {
+
+        for (Ride ride : rides) {
+
+            if (ride.rideId == rideId) {
+
+                if (ride.status.equals("Completed")) {
+                    System.out.println("Ride is already completed.");
+                    return;
+                }
+
+                ride.status = "Completed";
+
+                if (ride.driver != null)
+                    ride.driver.available = true;
+
+                System.out.println("Ride completed successfully!");
+                return;
+            }
+        }
+
+        System.out.println("Ride not found.");
+    }
+
+    // Display all rides
+    void displayAllRides() {
+
+        if (rides.isEmpty()) {
+            System.out.println("No rides available.");
+            return;
+        }
+
+        for (Ride ride : rides) {
+            ride.displayRide();
+        }
+    }
+
+    // Display available drivers
+    void displayAvailableDrivers() {
+
+        System.out.println("\nAvailable Drivers:");
+
+        boolean found = false;
+
+        for (Driver driver : drivers) {
+
+            if (driver.available) {
+                driver.displayDriver();
+                found = true;
+            }
+        }
+
+        if (!found)
+            System.out.println("No drivers available.");
+    }
+}
+
+// Main class
+public class Main {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        RideSharingPlatform platform = new RideSharingPlatform();
+
+        // Sample drivers
+        platform.addDriver(
+                new Driver(1, "Arjun", "Toyota Etios")
+        );
+
+        platform.addDriver(
+                new Driver(2, "Rahul", "Maruti Swift")
+        );
+
+        // Sample passengers
+        platform.addPassenger(
+                new Passenger(1, "Karthik")
+        );
+
+        int choice;
+
+        do {
+
+            System.out.println("\n===== RIDE SHARING PLATFORM =====");
+            System.out.println("1. Add Driver");
+            System.out.println("2. Add Passenger");
+            System.out.println("3. Book Ride");
+            System.out.println("4. Complete Ride");
+            System.out.println("5. View Available Drivers");
+            System.out.println("6. View All Rides");
+            System.out.println("7. Exit");
+            System.out.print("Enter your choice: ");
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    System.out.print("Enter Driver ID: ");
+                    int driverId = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter Driver Name: ");
+                    String driverName = sc.nextLine();
+
+                    System.out.print("Enter Vehicle: ");
+                    String vehicle = sc.nextLine();
+
+                    platform.addDriver(
+                            new Driver(driverId, driverName, vehicle)
+                    );
+                    break;
+
+                case 2:
+                    System.out.print("Enter Passenger ID: ");
+                    int passengerId = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter Passenger Name: ");
+                    String passengerName = sc.nextLine();
+
+                    platform.addPassenger(
+                            new Passenger(passengerId, passengerName)
+                    );
+                    break;
+
+                case 3:
+
+                    if (platform.passengers.isEmpty()) {
+                        System.out.println("No passengers registered.");
+                        break;
+                    }
+
+                    System.out.print("Enter Passenger ID: ");
+                    int pid = sc.nextInt();
+                    sc.nextLine();
+
+                    Passenger passenger = null;
+
+                    for (Passenger p : platform.passengers) {
+                        if (p.id == pid) {
+                            passenger = p;
+                            break;
+                        }
+                    }
+
+                    if (passenger == null) {
+                        System.out.println("Passenger not found.");
+                        break;
+                    }
+
+                    System.out.print("Enter Pickup Location: ");
+                    String pickup = sc.nextLine();
+
+                    System.out.print("Enter Destination: ");
+                    String destination = sc.nextLine();
+
+                    System.out.print("Enter Distance (km): ");
+                    double distance = sc.nextDouble();
+
+                    platform.bookRide(
+                            passenger,
+                            pickup,
+                            destination,
+                            distance
+                    );
+
+                    break;
+
+                case 4:
+
+                    System.out.print("Enter Ride ID: ");
+                    int rideId = sc.nextInt();
+
+                    platform.completeRide(rideId);
+                    break;
+
+                case 5:
+                    platform.displayAvailableDrivers();
+                    break;
+
+                case 6:
+                    platform.displayAllRides();
+                    break;
+
+                case 7:
+                    System.out.println("Thank you for using the Ride Sharing Platform!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+
+        } while (choice != 7);
+
+        sc.close();
+    }
+}
