@@ -1,0 +1,40 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<String> findAndReplacePattern(String[] words, String pattern) {
+        List<String> result = new ArrayList<>();
+        
+        for (String word : words) {
+            if (matches(word, pattern)) {
+                result.add(word);
+            }
+        }
+        
+        return result;
+    }
+    
+    private boolean matches(String word, String pattern) {
+        if (word.length() != pattern.length()) return false;
+        
+        char[] wordToPat = new char[26];
+        char[] patToWord = new char[26];
+        
+        for (int i = 0; i < word.length(); i++) {
+            char w = word.charAt(i);
+            char p = pattern.charAt(i);
+            
+            int wIdx = w - 'a';
+            int pIdx = p - 'a';
+            
+            if (wordToPat[wIdx] == 0 && patToWord[pIdx] == 0) {
+                wordToPat[wIdx] = p;
+                patToWord[pIdx] = w;
+            } else if (wordToPat[wIdx] != p || patToWord[pIdx] != w) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
